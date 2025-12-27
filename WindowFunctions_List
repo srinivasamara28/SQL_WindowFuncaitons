@@ -1,0 +1,25 @@
+Here are the list of window functions
+
+AGGREGATE FUNCTIONS:
+--------------------
+AVG()
+MAX()
+MIN()
+SUM()
+COUNT()
+
+RANKING_FUNCTIONS:
+------------------
+ROW_NUMBER()
+RANK()
+DENSE_RANK()
+PERCENT_RANK()
+NTILE()
+
+VALUE FUNCTIONS():
+-----------------
+LAG()
+LEAD()
+FIRST_VALUE()
+LAST_VALUE()
+NTH_VALUE()
