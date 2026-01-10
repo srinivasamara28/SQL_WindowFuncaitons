@@ -1,0 +1,97 @@
+
+
+
+CREATE DATABASE window_functions;
+use window_functions;
+CREATE TABLE employee
+( emp_id INT,
+emp_name varchar(50),
+dept VARCHAR(50),
+salary INT);
+
+-- insert into employee va lues(101, 'Mohan', 'Admin', 4000);
+insert into employee values(102, 'Rajkumar', 'HR', 3000);
+insert into employee values(103, 'Akbar', 'IT', 4000);
+-- insert into employee values(104, 'Dorvin', 'Finance', 6500);
+insert into employee values(105, 'Rohit', 'HR', 3000);
+insert into employee values(106, 'Rajesh',  'Finance', 5000);
+insert into employee values(107, 'Preet', 'HR', 7000);
+insert into employee values(108, 'Maryam', 'Admin', 4000);
+insert into employee values(109, 'Sanjay', 'IT', 6500);
+insert into employee values(110, 'Vasudha', 'IT', 7000);
+insert into employee values(111, 'Melinda', 'IT', 8000);
+insert into employee values(112, 'Komal', 'IT', 10000);
+insert into employee values(113, 'Gautham', 'Admin', 2000);
+insert into employee values(114, 'Manisha', 'HR', 3000);
+insert into employee values(115, 'Chandni', 'IT', 4500);
+insert into employee values(116, 'Satya', 'Finance', 6500);
+insert into employee values(117, 'Adarsh', 'HR', 3500);
+insert into employee values(118, 'Tejaswi', 'Finance', 5500);
+insert into employee values(119, 'Cory', 'HR', 8000);
+insert into employee values(120, 'Monica', 'Admin', 5000);
+insert into employee values(121, 'Rosalin', 'IT', 6000);
+insert into employee values(122, 'Ibrahim', 'IT', 8000);
+insert into employee values(123, 'Vikram', 'IT', 8000);
+insert into employee values(124, 'Dheeraj', 'IT', 11000);
+COMMIT;
+
+use window_functions;
+
+select * from employee;
+
+-- max salaray
+select dept,max(salary) as max_sal from employee
+group by dept
+;
+
+select e.*, max(salary)  over() as max_salary from employee e;
+
+select e.*, max(salary) over(partition by dept) as max_salary from employee e;
+
+
+-- ROW_NUMBER()
+
+select e.*, row_number() over() as rn from employee e; -- over() dont have any thing means.. entire table will become as window and row_number() is applicable to all records in the table
+
+select e.*, row_number() over(partition by dept) as rn from employee e;
+
+-- Fetch the first 2 employees from each department joined the company 
+select * from (
+select e.*, row_number() over(partition by dept order by emp_id) as rn from employee e)t
+where t.rn < 3;
+
+
+-- RANK() & DENSE_RANK()
+-- Fetch the top 3 employees in each department earning the max salary
+
+select * from (
+select e.*, 
+row_number() over(partition by dept order by salary desc) as row_num,
+rank() over(partition by dept order by salary desc) as rnk,
+dense_rank() over(partition by dept order by salary desc) as drnk
+ from employee e)t
+where t.rnk < 4;
+;
+
+
+-- LEAD() & LAG()
+
+-- fetch a query to disply if the salary of an employee is higher, lower or equal to the previous employee
+
+select e.*,
+lag(salary) over(partition by dept order by emp_id asc) as prev_emp_sal,
+lag(salary, 2, 0) over(partition by dept order by emp_id asc) as prev_emp_sal_2, -- Shows salaray of 2 rows prior to the current row and defaults to 0 if the value is null.
+lead(salary) over(partition by dept order by emp_id asc) as next_emp_sal
+from employee e;
+
+
+select e.*,
+lag(salary) over(partition by dept order by emp_id asc) as prev_emp_sal,
+case 
+	when e.salary > lag(salary) over(partition by dept order by emp_id asc) then "HIGHER"
+	when e.salary = lag(salary) over(partition by dept order by emp_id asc) then "EQUAL" 
+    when e.salary < lag(salary) over(partition by dept order by emp_id asc) then "LOWER" 
+    else "FIRST RECORD" end
+from employee e;
+
+
