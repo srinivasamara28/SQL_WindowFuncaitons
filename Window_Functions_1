@@ -1,4 +1,9 @@
-
+-- Window Functions covered:
+-- ROW_NUMBER()
+-- RANK()
+-- DENSE_RANK()
+-- LEAD()
+-- LAG()
 
 
 CREATE DATABASE window_functions;
